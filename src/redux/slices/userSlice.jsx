@@ -27,7 +27,7 @@ const initialState = {
         logout: (state) => {
             state.user = null
             state.isAuthenticated = false
-            state.status = 'idle'
+            state.status = 'succeeded'
             state.error = null
         },
         updateUser: (state, action) => {

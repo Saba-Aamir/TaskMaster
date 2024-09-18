@@ -1,11 +1,17 @@
-import React from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { addTask } from './redux/slices/tasksSlice';
+import React, { useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux';
+import { loginRequest, loginSuccess, logout } from './redux/slices/userSlice';
+import { auth } from './utils/firebase.utils';
+import { Outlet } from "react-router-dom";
+import Header from './components/Header';
+import AuthenticatedHeader from './components/AuthenticatedHeader';
+import Footer from './components/Footer';
 
 function App() {
+  const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
   const tasks = useSelector(state => state.tasks.tasks);
   const categories = useSelector(state => state.categories.categories);
-  const user = useSelector(state => state.user);
+  const user = useSelector(state => state.user.user);
   const dispatch = useDispatch();
 
   //Redux store is correctly set-up along with the state, actions and reducers
@@ -13,18 +19,23 @@ function App() {
   console.log(categories, 'categories');
   console.log(user, 'user');
 
-  const newTask = {
-    id: 7,
-    title: 'Get a haircut',
-    category: 'Personal',
-    completed: false
-  }
+  useEffect(() => {
+    dispatch(loginRequest());
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        dispatch(loginSuccess({ user: { uid: user.uid, email: user.email } }));
+      } else {
+        dispatch(logout());
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   return (
     <div className="App">
-      Task Master App
-      {tasks.length && tasks.map((task) => <li key={task.id}>{task.title}</li>)}
-      <button onClick={() => dispatch(addTask(newTask))}>Add Task</button>
+      {isAuthenticated ? <AuthenticatedHeader/> : <Header />}
+      <Outlet />
+      {!isAuthenticated && <Footer />}
     </div>
   );
 }
