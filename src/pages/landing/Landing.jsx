@@ -134,7 +134,6 @@ const LandingTitle = styled.h1`
   font-size: 3.5rem;
   font-weight: bold;
   margin: 0 0 1rem 0;
-  color: #343a40;
   color: ${colors.text};
     @media only screen and ${devices.sm} {
       font-size: 2.2rem;
@@ -147,7 +146,6 @@ const LandingSubTitle = styled.h1`
   font-size: 2.5rem;
   font-weight: bold;
   margin: 0 0 1rem 0;
-  color: #343a40;
   color: ${colors.text};
     @media only screen and ${devices.sm} {
       font-size: 2rem;
@@ -173,7 +171,7 @@ const LandingButton = styled.button`
   font-size: 1.2rem;
   font-family: 'Roboto';
   letter-spacing: 0.05rem;
-  color: #fff;
+  color: ${colors.white};
   background-color: ${colors.accent3};
   transition: background-color .2s ease;
   padding: 6px 16px;

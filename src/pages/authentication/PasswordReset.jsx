@@ -203,7 +203,7 @@ const Button = styled.button`
   font-size: 1rem;
   font-family: 'Roboto';
   letter-spacing: 0.05rem;
-  color: #fff;
+  color: ${colors.white};
   background-color: ${colors.accent3};
   transition: background-color .2s ease;
   padding: 6px 16px;

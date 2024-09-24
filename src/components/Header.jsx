@@ -78,7 +78,7 @@ const Container = styled.header`
   height: 72px;
   line-height: 72px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .06);
-  background: #fff;
+  background: ${colors.white};
   @media only screen and ${devices.sm} {
     height: 56px;
     line-height: 56px;
@@ -141,7 +141,7 @@ const NavButton = styled.button`
   border: 1px solid rgba(0, 0, 0, .24);
   border-radius: 6px;
   padding: 8px 20px;
-  background-color: #fff;
+  background-color: ${colors.white};
   margin-left: 1.25rem;
   font-size: 1rem;
   font-weight: 400;
@@ -173,7 +173,7 @@ const MobileNavList = styled.ul`
   list-style: none;
   z-index: 3;
   position: fixed;
-  background: #fff;
+  background: ${colors.white};
   padding-left: 0;
 `;
 

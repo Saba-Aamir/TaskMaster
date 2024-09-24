@@ -131,7 +131,6 @@ const FeatureTitle = styled.h1`
   font-size: 3.5rem;
   font-weight: bold;
   margin: 0 0 1rem 0;
-  color: #343a40;
   color: ${colors.text};
     @media only screen and ${devices.sm} {
       font-size: 2.2rem;
@@ -144,7 +143,6 @@ const FeatureSubTitle = styled.h1`
   font-size: 2.5rem;
   font-weight: bold;
   margin: 0 0 1rem 0;
-  color: #343a40;
   color: ${colors.text};
     @media only screen and ${devices.sm} {
       font-size: 2rem;

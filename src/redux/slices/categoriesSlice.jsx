@@ -8,6 +8,11 @@ const initialState = {
         { id: 4, name: 'Shopping' },
         { id: 5, name: 'Travel' },
     ],
+    priorities: [
+        { id: 1, name: 'Low' },
+        { id: 2, name: 'Medium' },
+        { id: 3, name: 'High' },
+    ],
 }
 
 const categoriesSlice = createSlice({

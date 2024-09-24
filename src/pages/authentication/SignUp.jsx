@@ -229,7 +229,7 @@ const Button = styled.button`
   font-size: 1rem;
   font-family: 'Roboto';
   letter-spacing: 0.05rem;
-  color: #fff;
+  color: ${colors.white};
   background-color: ${colors.accent3};
   transition: background-color .2s ease;
   padding: 6px 16px;
@@ -265,7 +265,7 @@ const GoogleSignIn = styled.button`
   border-radius: 6px;
   border: 1px solid rgba(25, 25, 25, .1);
   color: ${colors.text};
-  background-color: #fff;
+  background-color: ${colors.white};
   min-width: 100px;
   cursor: pointer;
   font-weight: 500;

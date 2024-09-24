@@ -1,35 +1,31 @@
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
-import { loginRequest, loginSuccess, logout } from './redux/slices/userSlice';
-import { auth } from './utils/firebase.utils';
 import { Outlet } from "react-router-dom";
+import { loginRequest, loginSuccess, logout } from './redux/slices/userSlice';
+import { setTasks } from './redux/slices/tasksSlice';
+import { auth, fetchTasksFromFirestore } from './utils/firebase.utils';
 import Header from './components/Header';
 import AuthenticatedHeader from './components/AuthenticatedHeader';
 import Footer from './components/Footer';
 
 function App() {
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
-  const tasks = useSelector(state => state.tasks.tasks);
-  const categories = useSelector(state => state.categories.categories);
-  const user = useSelector(state => state.user.user);
   const dispatch = useDispatch();
-
-  //Redux store is correctly set-up along with the state, actions and reducers
-  console.log(tasks, 'tasks');
-  console.log(categories, 'categories');
-  console.log(user, 'user');
 
   useEffect(() => {
     dispatch(loginRequest());
-    const unsubscribe = auth.onAuthStateChanged((user) => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
         dispatch(loginSuccess({ user: { uid: user.uid, email: user.email } }));
+        const tasks = await fetchTasksFromFirestore();
+        dispatch(setTasks(tasks));
       } else {
+        dispatch(setTasks([]));
         dispatch(logout());
       }
     });
     return () => unsubscribe();
-  }, []);
+  }, [dispatch]);
 
   return (
     <div className="App">

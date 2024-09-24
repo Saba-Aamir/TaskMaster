@@ -1,12 +1,16 @@
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import colors from "../../styles/colors";
 import { devices } from "../../styles/breakpoints";
+import TaskFilters from "../../components/TaskFilters";
+import TaskInput from "../../components/TaskInput";
+import TaskList from "../../components/TaskList";
+import FilterListIcon from '@mui/icons-material/FilterList';
+import CloseIcon from '@mui/icons-material/Close';
 
 const Dashboard = () => {
 
-  const navigate = useNavigate();
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   useEffect(() => {
     window.scrollTo({
@@ -18,16 +22,31 @@ const Dashboard = () => {
     return (
       <Container>
         <Wrapper>
+          <Sidebar>
+            <TaskFilters />
+          </Sidebar>
           <Main>
-            <SectionLeft>
-              <ImageWrapper>
-              </ImageWrapper>
-            </SectionLeft>
-            <SectionRight>
-             Welcome to the dashboard!
-            </SectionRight>
+            <TaskHeader className="main">
+              <Heading>Add Task</Heading>
+            </TaskHeader>
+            <TaskInput />
+            <TaskHeader>
+              <Heading>My Tasks</Heading>
+              <FilterButton id="filter-button" onClick={() => setIsFilterOpen(!isFilterOpen)}>
+                <FilterListIcon />
+              </FilterButton>
+            </TaskHeader>
+            <TaskList /> 
           </Main>
         </Wrapper>
+        <Overlay isFilterOpen={isFilterOpen}>
+          <OverlayHeader>
+            <CloseButton onClick={() => setIsFilterOpen(false)}>
+              <CloseIcon />
+            </CloseButton>
+          </OverlayHeader>
+          <TaskFilters />
+        </Overlay>
       </Container>
     )
 }
@@ -37,151 +56,124 @@ export default Dashboard;
 const Container = styled.div`
   display: flex;
   justify-content: center;
-  padding: 22px;
+  padding: 0 22px;
+  margin-top: 72px;
+  height: 100%;
+  @media only screen and ${devices.sm} {
+    margin-top: 3.5rem;
+    padding: 0;
+  }
 `;
 
 const Wrapper = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 848px;
-    @media only screen and ${devices.sm} {
-      width: 100%
-    }
-`;
-
-const Image = styled.img`
-`;
-
-const Main = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 100px;
-  margin-bottom: 20px;
-  position: relative;
-   @media only screen and ${devices.sm} {
-      flex-direction: column;
-      margin-top: 3.5rem;
-      margin-bottom: 0;
-    }
-`;
-
-const SectionLeft = styled.section`
-  display: flex;
-  justify-content: center;
-  position: relative;
-`;
-
-const SectionRight = styled.section`
-  margin-left: 70px;
-  width: 310px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-    @media only screen and ${devices.sm} {
-      margin-left: 0;
-      width: 100%;
-    }
-`;
-
-const ImageWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  position: relative;
-  align-items: center;
-
-  > img {
-    @media only screen and ${devices.sm} {
-      width: 300px;
-      height: 300px;
-    }
+  flex-direction: row;
+  align-items: start;
+  justify-content: start;
+  max-width: 1280px;
+  width: 90%;
+  @media only screen and ${devices.sm} {
+    flex-direction: column;
   }
 `;
 
-const FormTitle = styled.h1`
-  font-size: 2.2rem;
-  font-weight: bold;
-  text-align: center;
-  margin: 0 0 1rem 0;
-  color: ${colors.text};
-    @media only screen and ${devices.sm} {
-      font-size: 2rem;
-      margin-top: 1rem;
-    }
+const Sidebar = styled.aside`
+  display: flex;
+  justify-content: start;
+  align-items: start;
+  height: 100%;
+  border-right: 2px solid ${colors.backgroundAlt};
+  padding: 22px 1rem 22px 0;
+  margin-right: 1rem;
+  width: 200px;
+  @media only screen and ${devices.sm} {
+    display: none;
+  }
 `;
 
-const Field = styled.div`
+const Main = styled.div`
+  height: 100%;
+  padding: 22px 0;
+  display: flex;
+  justify-content: start;
+  align-items: start;
+  flex-direction: column;
+  @media only screen and ${devices.sm} {
+    form {
+      width: 100%;
+    }
+    width: 100%;
+  }
+`;
+
+const TaskHeader = styled.div`
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 0 1rem;
+  width: 100%;
+  border-bottom: 2px solid ${colors.backgroundAlt};
+  @media only screen and ${devices.sm} {
+    display: flex;
+  }
+  &.main {
+    padding-top: 0;
+    border-bottom: none;
+  }
+`;
+
+const Heading = styled.h2`
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 0;
+  padding: 0;
+  color: ${colors.text};
+  width: 100%;
+`;
+
+const FilterButton = styled.button`
+  color: ${colors.text};
+  background-color: ${colors.backgroundAlt};
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 4px 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: ${({ isFilterOpen }) => (isFilterOpen ? '0' : '-100%')};
+  width: 300px;
+  height: 100%;
+  background-color: ${colors.background};
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+  transition: left 0.3s ease-in-out;
   display: flex;
   flex-direction: column;
-  margin: 1rem 0;
+  padding: 1rem;
 `;
 
-const Label = styled.label`
-  color: ${colors.text};
-  font-size: 1rem;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
+const OverlayHeader = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  padding: 0;
+  position: absolute;
+  right: 5px;
+  top: 7px;
 `;
 
-const Error = styled.h3`
-  color: ${colors.error};
-  font-size: 0.8rem;
-  font-weight: 500;
-  margin-bottom: 0;
-  margin-top: 0.5rem;
-`;
-
-const Input = styled.input`
-  border: 1px solid rgba(25, 25, 25, .1);
-  font-size: 0.9rem;
-  padding: 0.6rem;
-  height: 40px;
-  box-sizing: border-box;
-  border-radius: 6px;
-`;
-
-const Button = styled.button`
-  border-radius: 6px;
+const CloseButton = styled.button`
+  background-color: transparent;
   border: none;
-  outline: 0;
-  min-width: 100px;
   cursor: pointer;
-  font-weight: 500;
-  line-height: 1;
-  text-align: center;
-  font-size: 1rem;
-  font-family: 'Roboto';
-  letter-spacing: 0.05rem;
-  color: #fff;
-  background-color: ${colors.accent3};
-  transition: background-color .2s ease;
-  padding: 6px 16px;
-  height: 40px;
-  width: 100%;
-    &:hover {
-      background-color: ${colors.accent2};
-    }
-`;
-
-const Text = styled.h3`
-  color: ${colors.secondary};
-  font-size: 0.9rem;
-  font-weight: 500;
-  margin: 0;
-  text-align: center;
-`;
-
-const Link = styled.a`
-  color: ${colors.secondary};
-  font-size: 0.9rem;
-  font-weight: 500;
-  margin: 0;
-  text-align: center;
-  cursor: pointer;
-    &:hover {
-      color: ${colors.text};
-      text-decoration: underline;
-    }
+  color: ${colors.text};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
 `;

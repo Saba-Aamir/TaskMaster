@@ -1,14 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-  tasks: [
-    { id: 1, title: 'Complete project report', category: 'Work', completed: false },
-    { id: 2, title: 'Grocery shopping', category: 'Personal', completed: false },
-    { id: 3, title: 'Attend team meeting', category: 'Work', completed: true },
-    { id: 4, title: 'Read a book', category: 'Personal', completed: false },
-    { id: 5, title: 'Plan weekend trip', category: 'Personal', completed: false },
-    { id: 6, title: 'Submit expense report', category: 'Work', completed: true },
-  ],
+  tasks: [],
   statusFilter: 'all',
   priorityFilter: 'all',
   categoryFilter: 'all',
@@ -18,8 +11,11 @@ const tasksSlice = createSlice({
   name: 'tasks',
   initialState,
   reducers: {
+    setTasks: (state, action) => {
+      state.tasks = action.payload;
+    },
     addTask: (state, action) => {
-      state.tasks.push(action.payload)
+      state.tasks.unshift(action.payload)
     },
     editTask: (state, action) => {
       const { id, updatedTask } = action.payload
@@ -32,9 +28,20 @@ const tasksSlice = createSlice({
       state.tasks = state.tasks.filter(task => task.id !== action.payload)
     },
     toggleTaskStatus: (state, action) => {
-      const task = state.tasks.find(task => task.id === action.payload)
-      if (task) {
-        task.status = task.status === 'complete' ? 'incomplete' : 'complete'
+      const taskId = action.payload;
+      const taskIndex = state.tasks.findIndex(task => task.id === taskId);
+
+      if (taskIndex !== -1) {
+        const task = state.tasks[taskIndex];
+        const updatedTask = { ...task, completed: !task.completed };
+
+        state.tasks.splice(taskIndex, 1);
+
+        if (updatedTask.completed) {
+          state.tasks.push(updatedTask);
+        } else {
+          state.tasks.unshift(updatedTask);
+        }
       }
     },
     setStatusFilter: (state, action) => {
@@ -51,6 +58,7 @@ const tasksSlice = createSlice({
 
 // Action creators are generated for each case reducer function
 export const { 
+  setTasks,
   addTask,
   editTask,
   deleteTask,
