@@ -1,15 +1,23 @@
-import { useState, useRef } from 'react';
-import { useDispatch } from 'react-redux';
-import { toggleTaskStatus, deleteTask, editTask } from '../redux/slices/tasksSlice';
-import { updateTaskInFirestore, deleteTaskFromFirestore } from '../utils/firebase.utils';
+import { useState, useRef } from "react";
+import { useDispatch } from "react-redux";
+import {
+  toggleTaskStatus,
+  deleteTask,
+  editTask,
+} from "../redux/slices/tasksSlice";
+import { addToast } from "../redux/slices/toastSlice";
+import {
+  updateTaskInFirestore,
+  deleteTaskFromFirestore,
+} from "../utils/firebase.utils";
 import styled from "styled-components";
 import { devices } from "../styles/breakpoints";
 import colors from "../styles/colors";
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import ClearIcon from '@mui/icons-material/Clear';
-import FlagIcon from '@mui/icons-material/Flag';
-import EditIcon from '@mui/icons-material/Edit';
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import ClearIcon from "@mui/icons-material/Clear";
+import FlagIcon from "@mui/icons-material/Flag";
+import EditIcon from "@mui/icons-material/Edit";
 
 const TaskItem = ({ task }) => {
   const dispatch = useDispatch();
@@ -21,8 +29,22 @@ const TaskItem = ({ task }) => {
     try {
       await updateTaskInFirestore(task.id, { completed: !task.completed });
       dispatch(toggleTaskStatus(task.id));
+      dispatch(
+        addToast({
+          message: task.completed
+            ? "Task marked incomplete."
+            : "Task marked complete.",
+          type: "success",
+        })
+      );
     } catch (error) {
-      console.error('Error updating task:', error);
+      console.error("Error updating task:", error);
+      dispatch(
+        addToast({
+          message: "Error updating task. Please try again.",
+          type: "error",
+        })
+      );
     }
   };
 
@@ -30,8 +52,17 @@ const TaskItem = ({ task }) => {
     try {
       await deleteTaskFromFirestore(task.id);
       dispatch(deleteTask(task.id));
+      dispatch(
+        addToast({ message: "Task deleted successfully.", type: "success" })
+      );
     } catch (error) {
-      console.error('Error deleting task:', error);
+      console.error("Error deleting task:", error);
+      dispatch(
+        addToast({
+          message: "Error deleting task. Please try again.",
+          type: "error",
+        })
+      );
     }
   };
 
@@ -39,9 +70,18 @@ const TaskItem = ({ task }) => {
     try {
       await updateTaskInFirestore(task.id, { title: editText });
       dispatch(editTask({ id: task.id, updatedTask: { title: editText } }));
+      dispatch(
+        addToast({ message: "Task updated successfully.", type: "success" })
+      );
       setIsEditing(false);
     } catch (error) {
-      console.error('Error updating task:', error);
+      console.error("Error updating task:", error);
+      dispatch(
+        addToast({
+          message: "Error updating task. Please try again.",
+          type: "error",
+        })
+      );
     }
   };
 
@@ -54,7 +94,7 @@ const TaskItem = ({ task }) => {
   };
 
   return (
-    <Task className={task.completed ? 'completed-task' : 'task'}>
+    <Task className={task.completed ? "completed-task" : "task"}>
       <TaskContent>
         <TaskMarkComplete onClick={handleToggleStatus}>
           {task.completed ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
@@ -66,7 +106,7 @@ const TaskItem = ({ task }) => {
             value={editText}
             onChange={(e) => setEditText(e.target.value)}
             onBlur={handleEditSave}
-            onKeyDown={(e) => e.key === 'Enter' && handleEditSave()}
+            onKeyDown={(e) => e.key === "Enter" && handleEditSave()}
           />
         ) : (
           <TaskTitle onMouseEnter={() => setIsEditing(false)}>
@@ -77,7 +117,16 @@ const TaskItem = ({ task }) => {
       </TaskContent>
       <TaskInfo>
         <TaskCategory>{task.category}</TaskCategory>
-        <FlagIcon sx={{ color: task.priority === "Low" ? colors.low : task.priority === "Medium" ? colors.medium : colors.high }} />
+        <FlagIcon
+          sx={{
+            color:
+              task.priority === "Low"
+                ? colors.low
+                : task.priority === "Medium"
+                ? colors.medium
+                : colors.high,
+          }}
+        />
         <TaskDelete onClick={handleDelete}>
           <ClearIcon />
         </TaskDelete>
@@ -188,7 +237,7 @@ const TaskMarkComplete = styled.div`
   justify-content: center;
   align-items: center;
   margin-right: 0.4rem;
-   &:hover {
+  &:hover {
     color: ${colors.text};
   }
   @media only screen and ${devices.sm} {

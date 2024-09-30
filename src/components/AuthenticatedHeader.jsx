@@ -1,63 +1,97 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../redux/slices/userSlice";
+import { addToast } from "../redux/slices/toastSlice";
 import { auth } from "../utils/firebase.utils";
 import styled from "styled-components";
 import TMLogo from "../assets/images/logo.png";
 import colors from "../styles/colors";
 import { devices } from "../styles/breakpoints";
-import MenuIcon from '@mui/icons-material/Menu';
-import CloseIcon from '@mui/icons-material/Close';
+import MenuIcon from "@mui/icons-material/Menu";
+import CloseIcon from "@mui/icons-material/Close";
 
 const AuthenticatedHeader = () => {
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const user = useSelector(state => state.user.user);
+  const user = useSelector((state) => state.user.user);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   const handleLogout = () => {
-    auth.signOut()
+    auth
+      .signOut()
       .then(() => {
         dispatch(logout());
+        dispatch(
+          addToast({ message: "Logged out successfully.", type: "success" })
+        );
       })
-      .catch((error) => console.error("Error logging out: ", error));
+      .catch((error) => {
+        console.error("Error logging out: ", error);
+        dispatch(
+          addToast({
+            message: "Error logging out. Please try again.",
+            type: "error",
+          })
+        );
+      });
   };
 
-    return (
-      <>
-        <Container>
-          <Wrapper>
-            <Logo>
-              <Image src={TMLogo} width={25} height={25} onClick={() => navigate('/')} />
-              <Title onClick={() => navigate('/')}>Task Master</Title>
-            </Logo>
-            <Nav>
-              <NavItem>
-                <NavText>
-                  Welcome <NavTextBold>{user.user.email}</NavTextBold>!
-                </NavText>
-              </NavItem>
-              <NavItem>
-                <NavButton onClick={handleLogout}>Sign Out</NavButton>
-              </NavItem>
-            </Nav>
-            <MobileNav>
-              {mobileNavOpen ? <CloseIcon fontSize="large" onClick={() => setMobileNavOpen(false)}/> : <MenuIcon fontSize="large" onClick={() => setMobileNavOpen(true)}/>}
-            </MobileNav>
-          </Wrapper>
-        </Container>
-        {mobileNavOpen && (
-          <MobileNavList>
-            <MobileNavItem>
-              <NavLink onClick={() => { handleLogout(); setMobileNavOpen(false); }}>Sign Out</NavLink>
-            </MobileNavItem>
-          </MobileNavList>
-        )}
-      </>
-    )
-}
+  return (
+    <>
+      <Container>
+        <Wrapper>
+          <Logo>
+            <Image
+              src={TMLogo}
+              width={25}
+              height={25}
+              onClick={() => navigate("/")}
+            />
+            <Title onClick={() => navigate("/")}>Task Master</Title>
+          </Logo>
+          <Nav>
+            <NavItem>
+              <NavText>
+                Welcome <NavTextBold>{user.user.email}</NavTextBold>!
+              </NavText>
+            </NavItem>
+            <NavItem>
+              <NavButton onClick={handleLogout}>Sign Out</NavButton>
+            </NavItem>
+          </Nav>
+          <MobileNav>
+            {mobileNavOpen ? (
+              <CloseIcon
+                fontSize="large"
+                onClick={() => setMobileNavOpen(false)}
+              />
+            ) : (
+              <MenuIcon
+                fontSize="large"
+                onClick={() => setMobileNavOpen(true)}
+              />
+            )}
+          </MobileNav>
+        </Wrapper>
+      </Container>
+      {mobileNavOpen && (
+        <MobileNavList>
+          <MobileNavItem>
+            <NavLink
+              onClick={() => {
+                handleLogout();
+                setMobileNavOpen(false);
+              }}
+            >
+              Sign Out
+            </NavLink>
+          </MobileNavItem>
+        </MobileNavList>
+      )}
+    </>
+  );
+};
 
 export default AuthenticatedHeader;
 
@@ -71,7 +105,7 @@ const Container = styled.header`
   font-size: 0;
   height: 72px;
   line-height: 72px;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .06);
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.06);
   background: ${colors.white};
   @media only screen and ${devices.sm} {
     height: 56px;
@@ -91,17 +125,17 @@ const Logo = styled.div`
   display: flex;
   align-items: center;
   flex: 1 1;
-  > img, h1 {
+  > img,
+  h1 {
     cursor: pointer;
   }
 `;
 
-const Image = styled.img`
-`;
+const Image = styled.img``;
 
 const Title = styled.h1`
   font-size: 1.8rem;
-  font-family: 'New Amsterdam'; 
+  font-family: "New Amsterdam";
   text-align: center;
   margin: 0 0 0 0.5rem;
   color: ${colors.text};
@@ -117,7 +151,7 @@ const Nav = styled.ul`
 
 const NavItem = styled.li`
   float: left;
-  `;
+`;
 
 const NavText = styled.h3`
   display: inline-block;
@@ -129,7 +163,7 @@ const NavText = styled.h3`
 const NavTextBold = styled.span`
   font-weight: 600;
 `;
-  
+
 const NavLink = styled.a`
   cursor: pointer;
   display: inline-block;
@@ -143,7 +177,7 @@ const NavLink = styled.a`
 `;
 
 const NavButton = styled.button`
-  border: 1px solid rgba(0, 0, 0, .24);
+  border: 1px solid rgba(0, 0, 0, 0.24);
   border-radius: 6px;
   padding: 8px 20px;
   background-color: ${colors.white};
@@ -151,11 +185,11 @@ const NavButton = styled.button`
   font-size: 1rem;
   font-weight: 400;
   cursor: pointer;
-  font-family: 'Roboto';
+  font-family: "Roboto";
   vertical-align: middle;
-    &:hover {
+  &:hover {
     font-weight: 500;
-    border-color: rgba(0, 0, 0, .56);
+    border-color: rgba(0, 0, 0, 0.56);
   }
 `;
 
@@ -174,7 +208,8 @@ const MobileNavList = styled.ul`
   flex-direction: column;
   width: 100%;
   margin: 56px auto 0 auto;
-  box-shadow: 0 28px 38px 0 rgba(0, 0, 0, .21), inset 0 4px 8px 0 rgba(0, 0, 0, .06);
+  box-shadow: 0 28px 38px 0 rgba(0, 0, 0, 0.21),
+    inset 0 4px 8px 0 rgba(0, 0, 0, 0.06);
   list-style: none;
   z-index: 999;
   position: fixed;
@@ -184,7 +219,7 @@ const MobileNavList = styled.ul`
 `;
 
 const MobileNavItem = styled.div`
-  border-bottom: 1px solid rgba(0, 0, 0, .08);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   > a {
     width: 100%;
     padding: 1rem 1.2rem;

@@ -1,12 +1,13 @@
-import React, { useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { Outlet } from "react-router-dom";
-import { loginRequest, loginSuccess, logout } from './redux/slices/userSlice';
-import { setTasks } from './redux/slices/tasksSlice';
-import { auth, fetchTasksFromFirestore } from './utils/firebase.utils';
-import Header from './components/Header';
-import AuthenticatedHeader from './components/AuthenticatedHeader';
-import Footer from './components/Footer';
+import { loginRequest, loginSuccess, logout } from "./redux/slices/userSlice";
+import { setTasks } from "./redux/slices/tasksSlice";
+import { auth, fetchTasksFromFirestore } from "./utils/firebase.utils";
+import Header from "./components/Header";
+import AuthenticatedHeader from "./components/AuthenticatedHeader";
+import Footer from "./components/Footer";
+import Toast from "./components/Toast";
 
 function App() {
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
@@ -29,9 +30,10 @@ function App() {
 
   return (
     <div className="App">
-      {isAuthenticated ? <AuthenticatedHeader/> : <Header />}
+      {isAuthenticated ? <AuthenticatedHeader /> : <Header />}
       <Outlet />
       {!isAuthenticated && <Footer />}
+      <Toast />
     </div>
   );
 }
