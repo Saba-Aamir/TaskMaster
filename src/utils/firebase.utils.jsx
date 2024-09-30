@@ -1,15 +1,32 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithPopup, GoogleAuthProvider, setPersistence, browserSessionPersistence } from "firebase/auth";
-import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, getDocs, Timestamp, query, orderBy } from 'firebase/firestore';
+import {
+  getAuth,
+  signInWithPopup,
+  GoogleAuthProvider,
+  setPersistence,
+  browserSessionPersistence,
+} from "firebase/auth";
+import {
+  getFirestore,
+  collection,
+  doc,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  getDocs,
+  Timestamp,
+  query,
+  orderBy,
+} from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCnpB-z97uvYA7fk7ZzmwHk2QwAe9hF83Q",
-  authDomain: "task-master-a04de.firebaseapp.com",
-  projectId: "task-master-a04de",
-  storageBucket: "task-master-a04de.appspot.com",
-  messagingSenderId: "205587254867",
-  appId: "1:205587254867:web:ab82418e802608999a80a6",
-  measurementId: "G-VN4WBVLVBG"
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
 
 // Initialize Firebase
@@ -22,19 +39,21 @@ const db = getFirestore(firebaseApp);
 const provider = new GoogleAuthProvider();
 
 // Force the user to select an account
-provider.setCustomParameters({   
-  prompt : "select_account "
+provider.setCustomParameters({
+  prompt: "select_account ",
 });
 
 export const auth = getAuth();
 
-export const signInWithGooglePopup = () => signInWithPopup(auth, provider)
-  .then((result) => {
-    const user = result.user;
-    return user;
-  }).catch((error) => {
-    return error;
-  });
+export const signInWithGooglePopup = () =>
+  signInWithPopup(auth, provider)
+    .then((result) => {
+      const user = result.user;
+      return user;
+    })
+    .catch((error) => {
+      return error;
+    });
 
 setPersistence(auth, browserSessionPersistence)
   .then(() => {
@@ -48,20 +67,26 @@ setPersistence(auth, browserSessionPersistence)
   .catch((error) => {
     // Handle Errors here.
   });
-  
+
 // Fetch all tasks
 export const fetchTasksFromFirestore = async () => {
   const user = auth.currentUser;
-  const tasksCollectionRef = collection(db, 'users', user.uid, 'tasks');
+  const tasksCollectionRef = collection(db, "users", user.uid, "tasks");
   // First order by 'completed', then by 'createdAt'
-  const q = query(tasksCollectionRef, orderBy('completed', 'asc'), orderBy('createdAt', 'desc'));
+  const q = query(
+    tasksCollectionRef,
+    orderBy("completed", "asc"),
+    orderBy("createdAt", "desc")
+  );
   const querySnapshot = await getDocs(q);
   const tasks = querySnapshot.docs.map((doc) => {
     const taskData = doc.data();
     return {
       id: doc.id,
       ...taskData,
-      createdAt: taskData.createdAt ? taskData.createdAt.toDate().toISOString() : null,
+      createdAt: taskData.createdAt
+        ? taskData.createdAt.toDate().toISOString()
+        : null,
     };
   });
   return tasks;
@@ -75,7 +100,7 @@ export const addTaskToFirestore = async (taskData) => {
     completed: false,
     createdAt: Timestamp.now(),
   };
-  const tasksCollectionRef = collection(db, 'users', user.uid, 'tasks');
+  const tasksCollectionRef = collection(db, "users", user.uid, "tasks");
   const docRef = await addDoc(tasksCollectionRef, task);
   return { id: docRef.id, ...task };
 };
@@ -83,13 +108,13 @@ export const addTaskToFirestore = async (taskData) => {
 // Update a task
 export const updateTaskInFirestore = async (taskId, updatedData) => {
   const user = auth.currentUser;
-  const taskDocRef = doc(db, 'users', user.uid, 'tasks', taskId);
+  const taskDocRef = doc(db, "users", user.uid, "tasks", taskId);
   await updateDoc(taskDocRef, updatedData);
 };
 
 // Delete a task
 export const deleteTaskFromFirestore = async (taskId) => {
   const user = auth.currentUser;
-  const taskDocRef = doc(db, 'users', user.uid, 'tasks', taskId);
+  const taskDocRef = doc(db, "users", user.uid, "tasks", taskId);
   await deleteDoc(taskDocRef);
 };
