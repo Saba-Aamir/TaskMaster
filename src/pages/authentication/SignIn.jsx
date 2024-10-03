@@ -75,13 +75,7 @@ const SignIn = () => {
     email: Yup.string()
       .email("Please enter a valid email.")
       .required("Email cannot be empty."),
-    password: Yup.string()
-      .matches(
-        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{4,}$/,
-        "Password must contain atleast 1 lowercase, 1 uppercase, 1 number and 1 special character."
-      )
-      .min(8, "Password must have atleast 8 Charaters.")
-      .required("Password cannot be empty."),
+    password: Yup.string().required("Password cannot be empty."),
   });
 
   useEffect(() => {
